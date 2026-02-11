@@ -14,6 +14,7 @@ cargarEventListeners();
 function cargarEventListeners(){
 /*Cuando agregas un curso presionando "Agregar al carrito" */
 listaCursos.addEventListener('click', agregarCurso);
+carrito.addEventListener('click', eliminarCursos);
 }
 
 function agregarCurso(e){
@@ -22,6 +23,13 @@ function agregarCurso(e){
     if(e.target.classList.contains('agregar-carrito')){
         leerDatosCurso(cursoSeleccionado);
     }    
+}
+
+//Eliminar cursos
+function eliminarCursos(e){
+if(e.target.classList.contains('borrar-curso')){
+    console.log(e.target.getAttribute('data-id'));
+}
 }
 
 //lee el contenido del HTML que le dimos clik y extrae la informacion del curso
@@ -36,8 +44,27 @@ id: curso.querySelector('a').getAttribute('data-id'),
 cantidad: 1
 }
 
-/*Agregar elementos al arreglo de carrito*/
-articulosCarrito =[...articulosCarrito, infoCurso];
+
+/*Revisa si un elemento ya existe en el carrito */
+const existe = articulosCarrito.some( curso => curso.id === infoCurso.id);  
+    if(existe){
+        //Actulizamos la cantidad de curso agregados
+        const cursos = articulosCarrito.map(curso => {
+          if(curso.id === infoCurso.id){
+            curso.cantidad++;
+            return curso; // retorna los cursos actualizados si son mas que 1
+          }else{
+            return curso; //retorna los cursos normales que solo se eligio 1
+          }
+            
+
+        });
+        articulosCarrito=[...cursos];
+    }else{
+        /*Agregar elementos al arreglo de carrito*/
+        articulosCarrito =[...articulosCarrito, infoCurso];
+    }
+
 console.log(articulosCarrito);
 carritoHTML();
 }
@@ -46,13 +73,22 @@ carritoHTML();
 function carritoHTML(){
     //Limpiar el HMTL 
     limpiarCurso();
-    //recorre el carrito y genera el HTML
+    
 
+
+    //recorre el carrito y genera el HTML
+    //los <td> o tablas van conforme como los definimos en el HTML es como los agregamos aca 
     articulosCarrito.forEach((curso) => {
+        //console.log(curso);
+        const {imagen,titulo,precio,cantidad,id} = curso;
         const row = document.createElement('tr');
         row.innerHTML = `
-        <td>
-        ${curso.titulo}
+        <td><img src="${imagen} "width="100"</td>
+        <td>${titulo}</td>
+        <td>${precio}</td>
+        <td>${cantidad}</td>
+        <td> 
+        <a href="#" class="borrar-curso data-id="${id}"> X </a>
         </td>
         `;
         /* Agregar el HTML del carrito en el "tbody"*/
@@ -63,7 +99,7 @@ function carritoHTML(){
 /*Eliminar el curso del tbody */
 function limpiarCurso(){
     /*Esta es la forma lenta  
-    contenedorCarrito.innerHTML = '';*/
+    contenedorCarrito.innerHTML = '';   */
     /*La mejor manera de limpiar el html es usar un while 
     su explicacion facil es que elimina el hijo siguiente de la etique como un div*/
     while(contenedorCarrito.firstChild){
