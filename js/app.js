@@ -14,7 +14,13 @@ cargarEventListeners();
 function cargarEventListeners(){
 /*Cuando agregas un curso presionando "Agregar al carrito" */
 listaCursos.addEventListener('click', agregarCurso);
+//eliminar cursos del carrito
 carrito.addEventListener('click', eliminarCursos);
+//vaciar el carrito
+vaciarCarritoBtn.addEventListener('click',() =>{
+    articulosCarrito = [] //receteamos el arreglo
+    limpiarCurso(); //eliminar todo el HTML 
+})
 }
 
 function agregarCurso(e){
@@ -27,9 +33,13 @@ function agregarCurso(e){
 
 //Eliminar cursos
 function eliminarCursos(e){
-if(e.target.classList.contains('borrar-curso')){
-    console.log(e.target.getAttribute('data-id'));
-}
+    if(e.target.classList.contains('borrar-curso')){
+        const cursoID = e.target.getAttribute('data-id');
+        //eliminar del arrego de articulosCarrito por data-id
+    articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoID);
+    carritoHTML();//iterar sobre el carrito y mostrar lo que tienen
+    }
+
 }
 
 //lee el contenido del HTML que le dimos clik y extrae la informacion del curso
@@ -88,7 +98,7 @@ function carritoHTML(){
         <td>${precio}</td>
         <td>${cantidad}</td>
         <td> 
-        <a href="#" class="borrar-curso data-id="${id}"> X </a>
+        <a href="#" class="borrar-curso" data-id="${id}"> X </a>
         </td>
         `;
         /* Agregar el HTML del carrito en el "tbody"*/
